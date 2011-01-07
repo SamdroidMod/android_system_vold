@@ -180,8 +180,8 @@ void VolumeManager::handleSwitchEvent(NetlinkEvent *evt) {
     }
 
     bool oldAvailable = massStorageAvailable();
-    if (!strcmp(name, "usb_configuration")) {
-        mUsbConnected = !strcmp(state, "1");
+    if (!strcmp(name, "usb_mass_storage")) {
+        mUsbConnected = !strcmp(state, "online");
         SLOGD("USB %s", mUsbConnected ? "connected" : "disconnected");
         bool newAvailable = massStorageAvailable();
         if (newAvailable != oldAvailable) {
