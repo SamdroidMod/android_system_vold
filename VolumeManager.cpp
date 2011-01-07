@@ -72,6 +72,8 @@ void VolumeManager::readInitialState() {
     /*
      * Read the initial mass storage enabled state
      */
+     mUsbMassStorageEnabled = 1;
+/*
     if ((fp = fopen("/sys/devices/virtual/usb_composite/usb_mass_storage/enable", "r"))) {
         if (fgets(state, sizeof(state), fp)) {
             mUsbMassStorageEnabled = !strncmp(state, "1", 1);
@@ -82,13 +84,14 @@ void VolumeManager::readInitialState() {
     } else {
         SLOGD("USB mass storage support is not enabled in the kernel");
     }
+*/
 
     /*
      * Read the initial USB connected state
      */
-    if ((fp = fopen("/sys/devices/virtual/switch/usb_configuration/state", "r"))) {
+    if ((fp = fopen("/sys/class/switch/usb_mass_storage/state", "r"))) {
         if (fgets(state, sizeof(state), fp)) {
-            mUsbConnected = !strncmp(state, "1", 1);
+            mUsbConnected = !strncmp(state, "online", 6);
         } else {
             SLOGE("Failed to read usb_configuration switch (%s)", strerror(errno));
         }
@@ -1054,7 +1057,7 @@ int VolumeManager::shareVolume(const char *label, const char *method) {
              sizeof(nodepath), "/dev/block/vold/%d:%d",
              MAJOR(d), MINOR(d));
 
-    if ((fd = open("/sys/devices/platform/usb_mass_storage/lun0/file",
+    if ((fd = open("/sys/devices/platform/s3c6410-usbgadget/gadget/lun0/file",
                    O_WRONLY)) < 0) {
         SLOGE("Unable to open ums lunfile (%s)", strerror(errno));
         return -1;
@@ -1105,7 +1108,7 @@ int VolumeManager::unshareVolume(const char *label, const char *method) {
     }
 
     int fd;
-    if ((fd = open("/sys/devices/platform/usb_mass_storage/lun0/file", O_WRONLY)) < 0) {
+    if ((fd = open("/sys/devices/platform/s3c6410-usbgadget/gadget/lun0/file", O_WRONLY)) < 0) {
         SLOGE("Unable to open ums lunfile (%s)", strerror(errno));
         return -1;
     }
